@@ -10,9 +10,9 @@ PowerShell + REST API 写的 vCenter 一键巡检工具,生成工程师风 HTML 
 
 ## 截图
 
-vCenter 8.0 (192.168.100.20 — 实验环境):
+vCenter 8.0 (10.0.0.20 — Lab 环境，主机名 / IP 已脱敏):
 
-![vCenter 8.0 报告示例](docs/screenshot_192.168.100.20.png)
+![vCenter 8.0 报告示例](docs/screenshot_10.0.0.20.png)
 
 vCenter 6.5 (172.28.1.150 — 25 台 ESXi 生产环境):
 
@@ -24,12 +24,12 @@ vCenter 6.5 (172.28.1.150 — 25 台 ESXi 生产环境):
 
 ```powershell
 # 最简用法
-.\vcenter_inspect.ps1 -VCenter 192.168.100.20 `
+.\vcenter_inspect.ps1 -VCenter 10.0.0.20 `
                       -Username administrator@vsphere.local `
                       -Password 'YourPassword'
 
 # 跳过 VMware Tools 抽样 (大规模 VM 时省时)
-.\vcenter_inspect.ps1 -VCenter 192.168.100.20 -Username ... -Password ... -SkipToolsSample
+.\vcenter_inspect.ps1 -VCenter 10.0.0.20 -Username ... -Password ... -SkipToolsSample
 
 # Debug 模式 (记录每个 endpoint 的 HTTP code 与返回体到 vcenter_debug_*.log)
 .\vcenter_inspect.ps1 -VCenter 172.28.1.150 -Username ... -Password ... -DebugDump
@@ -43,13 +43,13 @@ vCenter 6.5 (172.28.1.150 — 25 台 ESXi 生产环境):
 ### 2. 转 Markdown
 
 ```powershell
-.\html_to_md.ps1 -InputPath .\report_192.168.100.20_2026-05-25.html
+.\html_to_md.ps1 -InputPath .\report_10.0.0.20_2026-05-25.html
 ```
 
 ### 3. 转 Word (需本机装 Office Word)
 
 ```powershell
-.\html_to_docx.ps1 -InputPath .\report_192.168.100.20_2026-05-25.html
+.\html_to_docx.ps1 -InputPath .\report_10.0.0.20_2026-05-25.html
 ```
 
 ## 命令行参数 (vcenter_inspect.ps1)
