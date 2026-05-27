@@ -21,8 +21,8 @@ docs/*
 screenshots_local/
 screenshot_*.png
 *.png
-# 例外：脱敏样张截图允许入仓
-!docs/report-preview*.png
+# 例外：脱敏样张截图允许入仓 (png / jpg / gif 等)
+!docs/report-preview*
 
 # OS / IDE
 Thumbs.db
