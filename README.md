@@ -135,6 +135,10 @@ Invoke-WebRequest `
 | `-SkipToolsSample` | — | `false` | 跳过 Tools 抽样，节省 ~10 秒 |
 | `-DebugDump` | — | `false` | 每个 endpoint 的 HTTP code + 返回体写入 `vcenter_debug_*.log` |
 | `-Quiet` | — | `false` | 静默运行，不打印进度（CI / 计划任务用） |
+| `-UsePowerCLI` | — | 自动检测 | 强制启用 PowerCLI 回退（v1.1+，未装则提示 Install-Module） |
+| `-SkipPowerCLI` | — | `false` | 强制跳过 PowerCLI 回退（即使已装），只走纯 REST |
+| `-Theme` | — | `light` | 报告主题：`light` / `dark` / `minimal` / `amber`（v1.2+） |
+| `-AccentColor` | — | — | 单独覆盖主色调，接 hex 如 `#10b981`（v1.2+） |
 
 ### 常用组合
 
@@ -151,6 +155,34 @@ Invoke-WebRequest `
 # 静默 + 自定义输出（脚本化调用）
 .\vcenter_inspect.ps1 -VCenter ... -Quiet -Output 'C:\reports\daily.html'
 ```
+
+### 报告主题（v1.2+）
+
+内置 4 套主题，所有章节统一换肤。整体配色集中在 HTML 顶部 `:root` 的 CSS variables，~15 个变量控制 background / foreground / border / accent / 状态色全套。
+
+| 主题 | 风格 | 适用场景 | Background | Accent |
+|---|---|---|---|---|
+| **`light`** ← 默认 | 白底 + 工程师蓝 | 邮件附件 / 打印 PDF / 公开报告 | `#f5f7fa` | `#1565c0` |
+| **`dark`** | 深灰 + 亮蓝 NOC | 大屏 / 24h 监控墙 | `#0f1419` | `#58a6ff` |
+| **`minimal`** | 灰白 + 近黑 accent | 极简风偏好 / 黑白打印 | `#fafafa` | `#27272a` |
+| **`amber`** | 米色 + 琥珀棕 | 暖色商务 / 客户交付 | `#fdfaf3` | `#b45309` |
+
+```powershell
+# 默认 light 主题，不用加参数
+.\vcenter_inspect.ps1 -VCenter ...
+
+# 切换内置主题
+.\vcenter_inspect.ps1 -VCenter ... -Theme dark
+.\vcenter_inspect.ps1 -VCenter ... -Theme amber
+
+# 任何主题 + 自定义主色调（覆盖该主题的 accent）
+.\vcenter_inspect.ps1 -VCenter ... -Theme minimal -AccentColor "#10b981"
+.\vcenter_inspect.ps1 -VCenter ... -Theme light   -AccentColor "#dc2626"
+```
+
+`-AccentColor` 接任意 hex（不验证格式，留权宜 — 误填会破坏渲染但不影响报告生成）。只覆盖 `--accent` 和 `--accent-2`，其余颜色仍走所选主题。
+
+---
 
 ### html_to_docx.ps1 / html_to_md.ps1
 

@@ -66,7 +66,11 @@ param(
     [switch] $DebugDump,
     # v1.1: PowerCLI 回退 — 自动检测；显式开关
     [switch] $UsePowerCLI,    # 强制启用 (即使未装也尝试 Install-Module 提示)
-    [switch] $SkipPowerCLI    # 强制跳过 (即使已装)
+    [switch] $SkipPowerCLI,   # 强制跳过 (即使已装)
+    # v1.2: 主题
+    [ValidateSet('light','dark','minimal','amber')]
+    [string] $Theme = 'light',
+    [string] $AccentColor     # 可选 hex (#1565c0) 单独覆盖主色,不切整套主题
 )
 
 # ============================================================================
@@ -874,8 +878,9 @@ function Render-Report {
     # ============================================================
     #  HTML 模板
     # ============================================================
-    $css = @'
-:root{
+    # ---- 主题色板 (v1.2) ----
+    $themePalette = switch ($Theme) {
+        'dark' { @'
   --bg:#0f1419;--bg-side:#0a0d12;--bg-card:#161b22;--bg-card-2:#1c2330;
   --fg:#d4d9e0;--fg-mute:#7a8290;--fg-dim:#5a6270;
   --border:#2a313c;--border-strong:#3a414c;
@@ -883,9 +888,47 @@ function Render-Report {
   --green:#3fb950;--amber:#d29922;--red:#f85149;--gray:#6e7681;--blue:#58a6ff;
   --green-bg:rgba(63,185,80,.12);--amber-bg:rgba(210,153,34,.12);
   --red-bg:rgba(248,81,73,.12);--gray-bg:rgba(110,118,129,.15);--blue-bg:rgba(88,166,255,.12);
-  --mono:'JetBrains Mono','Fira Code','SF Mono','Consolas','Cascadia Mono',monospace;
+'@ }
+        'minimal' { @'
+  --bg:#fafafa;--bg-side:#f4f4f5;--bg-card:#ffffff;--bg-card-2:#f7f7f8;
+  --fg:#18181b;--fg-mute:#52525b;--fg-dim:#a1a1aa;
+  --border:#e4e4e7;--border-strong:#d4d4d8;
+  --accent:#27272a;--accent-2:#3f3f46;
+  --green:#16a34a;--amber:#a16207;--red:#b91c1c;--gray:#71717a;--blue:#1d4ed8;
+  --green-bg:rgba(22,163,74,.08);--amber-bg:rgba(161,98,7,.08);
+  --red-bg:rgba(185,28,28,.08);--gray-bg:rgba(113,113,122,.08);--blue-bg:rgba(29,78,216,.08);
+'@ }
+        'amber' { @'
+  --bg:#fdfaf3;--bg-side:#f7f0e2;--bg-card:#ffffff;--bg-card-2:#fbf4e6;
+  --fg:#3f2a14;--fg-mute:#78623d;--fg-dim:#a89378;
+  --border:#e7d9bf;--border-strong:#d4c19c;
+  --accent:#b45309;--accent-2:#d97706;
+  --green:#15803d;--amber:#b45309;--red:#b91c1c;--gray:#8a7656;--blue:#1565c0;
+  --green-bg:rgba(21,128,61,.10);--amber-bg:rgba(180,83,9,.14);
+  --red-bg:rgba(185,28,28,.10);--gray-bg:rgba(138,118,86,.12);--blue-bg:rgba(21,101,192,.10);
+'@ }
+        default { @'
+  --bg:#f5f7fa;--bg-side:#ffffff;--bg-card:#ffffff;--bg-card-2:#f9fafb;
+  --fg:#0f172a;--fg-mute:#475569;--fg-dim:#94a3b8;
+  --border:#e2e8f0;--border-strong:#cbd5e1;
+  --accent:#1565c0;--accent-2:#1976d2;
+  --green:#16a34a;--amber:#d97706;--red:#dc2626;--gray:#64748b;--blue:#1565c0;
+  --green-bg:rgba(22,163,74,.10);--amber-bg:rgba(217,119,6,.10);
+  --red-bg:rgba(220,38,38,.10);--gray-bg:rgba(100,116,139,.10);--blue-bg:rgba(21,101,192,.10);
+'@ }
+    }
+    # 可选 -AccentColor 覆盖主色
+    $accentOverride = ''
+    if ($AccentColor) {
+        $accentOverride = "  --accent:$AccentColor;--accent-2:$AccentColor;`n"
+    }
+
+    $css = @"
+:root{
+$themePalette$accentOverride  --mono:'JetBrains Mono','Fira Code','SF Mono','Consolas','Cascadia Mono',monospace;
   --sans:-apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft YaHei','PingFang SC',Roboto,sans-serif;
 }
+"@ + @'
 *{box-sizing:border-box}
 html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased}
 a{color:var(--accent);text-decoration:none}

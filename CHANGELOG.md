@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added (v1.2 → 等多 vC 批量做完一起发)
+
+- **报告主题切换** — 新增 `-Theme` 参数，4 套内置主题：
+  - `light`（新默认，白底 + 工程师蓝，适合邮件 / 打印）
+  - `dark`（深灰 + 亮蓝 NOC，原 v1.0/v1.1 默认）
+  - `minimal`（灰白 + 近黑 accent）
+  - `amber`（米色 + 琥珀棕，暖色商务）
+- **主色单独覆盖** — 新增 `-AccentColor` 参数，接 hex 如 `#10b981`，单独覆盖该主题的 accent 而不切整套配色
+- HTML `:root` 重构为 ~15 个 CSS variables 集中控制 bg/fg/border/accent/状态色，4 主题统一通过覆盖 :root 实现，新增章节只需写一遍样式
+
 ### Planned
 
 - 多 vCenter 批量模式（`-VCenter @('vc1','vc2','vc3')`）
