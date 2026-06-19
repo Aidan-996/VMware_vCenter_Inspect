@@ -878,36 +878,8 @@ function Render-Report {
     # ============================================================
     #  HTML 模板
     # ============================================================
-    # ---- 主题色板 (v1.2) ----
-    $themePalette = switch ($Theme) {
-        'dark' { @'
-  --bg:#0f1419;--bg-side:#0a0d12;--bg-card:#161b22;--bg-card-2:#1c2330;
-  --fg:#d4d9e0;--fg-mute:#7a8290;--fg-dim:#5a6270;
-  --border:#2a313c;--border-strong:#3a414c;
-  --accent:#58a6ff;--accent-2:#79b8ff;
-  --green:#3fb950;--amber:#d29922;--red:#f85149;--gray:#6e7681;--blue:#58a6ff;
-  --green-bg:rgba(63,185,80,.12);--amber-bg:rgba(210,153,34,.12);
-  --red-bg:rgba(248,81,73,.12);--gray-bg:rgba(110,118,129,.15);--blue-bg:rgba(88,166,255,.12);
-'@ }
-        'minimal' { @'
-  --bg:#fafafa;--bg-side:#f4f4f5;--bg-card:#ffffff;--bg-card-2:#f7f7f8;
-  --fg:#18181b;--fg-mute:#52525b;--fg-dim:#a1a1aa;
-  --border:#e4e4e7;--border-strong:#d4d4d8;
-  --accent:#27272a;--accent-2:#3f3f46;
-  --green:#16a34a;--amber:#a16207;--red:#b91c1c;--gray:#71717a;--blue:#1d4ed8;
-  --green-bg:rgba(22,163,74,.08);--amber-bg:rgba(161,98,7,.08);
-  --red-bg:rgba(185,28,28,.08);--gray-bg:rgba(113,113,122,.08);--blue-bg:rgba(29,78,216,.08);
-'@ }
-        'amber' { @'
-  --bg:#fdfaf3;--bg-side:#f7f0e2;--bg-card:#ffffff;--bg-card-2:#fbf4e6;
-  --fg:#3f2a14;--fg-mute:#78623d;--fg-dim:#a89378;
-  --border:#e7d9bf;--border-strong:#d4c19c;
-  --accent:#b45309;--accent-2:#d97706;
-  --green:#15803d;--amber:#b45309;--red:#b91c1c;--gray:#8a7656;--blue:#1565c0;
-  --green-bg:rgba(21,128,61,.10);--amber-bg:rgba(180,83,9,.14);
-  --red-bg:rgba(185,28,28,.10);--gray-bg:rgba(138,118,86,.12);--blue-bg:rgba(21,101,192,.10);
-'@ }
-        default { @'
+    # ---- 主题色板 (v1.2): 4 套全部内嵌, 通过 [data-theme] 切换 ----
+    $palLight = @'
   --bg:#f5f7fa;--bg-side:#ffffff;--bg-card:#ffffff;--bg-card-2:#f9fafb;
   --fg:#0f172a;--fg-mute:#475569;--fg-dim:#94a3b8;
   --border:#e2e8f0;--border-strong:#cbd5e1;
@@ -915,19 +887,51 @@ function Render-Report {
   --green:#16a34a;--amber:#d97706;--red:#dc2626;--gray:#64748b;--blue:#1565c0;
   --green-bg:rgba(22,163,74,.10);--amber-bg:rgba(217,119,6,.10);
   --red-bg:rgba(220,38,38,.10);--gray-bg:rgba(100,116,139,.10);--blue-bg:rgba(21,101,192,.10);
-'@ }
-    }
-    # 可选 -AccentColor 覆盖主色
+'@
+    $palDark = @'
+  --bg:#0f1419;--bg-side:#0a0d12;--bg-card:#161b22;--bg-card-2:#1c2330;
+  --fg:#d4d9e0;--fg-mute:#7a8290;--fg-dim:#5a6270;
+  --border:#2a313c;--border-strong:#3a414c;
+  --accent:#58a6ff;--accent-2:#79b8ff;
+  --green:#3fb950;--amber:#d29922;--red:#f85149;--gray:#6e7681;--blue:#58a6ff;
+  --green-bg:rgba(63,185,80,.12);--amber-bg:rgba(210,153,34,.12);
+  --red-bg:rgba(248,81,73,.12);--gray-bg:rgba(110,118,129,.15);--blue-bg:rgba(88,166,255,.12);
+'@
+    $palMinimal = @'
+  --bg:#fafafa;--bg-side:#f4f4f5;--bg-card:#ffffff;--bg-card-2:#f7f7f8;
+  --fg:#18181b;--fg-mute:#52525b;--fg-dim:#a1a1aa;
+  --border:#e4e4e7;--border-strong:#d4d4d8;
+  --accent:#27272a;--accent-2:#3f3f46;
+  --green:#16a34a;--amber:#a16207;--red:#b91c1c;--gray:#71717a;--blue:#1d4ed8;
+  --green-bg:rgba(22,163,74,.08);--amber-bg:rgba(161,98,7,.08);
+  --red-bg:rgba(185,28,28,.08);--gray-bg:rgba(113,113,122,.08);--blue-bg:rgba(29,78,216,.08);
+'@
+    $palAmber = @'
+  --bg:#fdfaf3;--bg-side:#f7f0e2;--bg-card:#ffffff;--bg-card-2:#fbf4e6;
+  --fg:#3f2a14;--fg-mute:#78623d;--fg-dim:#a89378;
+  --border:#e7d9bf;--border-strong:#d4c19c;
+  --accent:#b45309;--accent-2:#d97706;
+  --green:#15803d;--amber:#b45309;--red:#b91c1c;--gray:#8a7656;--blue:#1565c0;
+  --green-bg:rgba(21,128,61,.10);--amber-bg:rgba(180,83,9,.14);
+  --red-bg:rgba(185,28,28,.10);--gray-bg:rgba(138,118,86,.12);--blue-bg:rgba(21,101,192,.10);
+'@
+    # 可选 -AccentColor 覆盖所有主题的 accent
     $accentOverride = ''
     if ($AccentColor) {
-        $accentOverride = "  --accent:$AccentColor;--accent-2:$AccentColor;`n"
+        $accentOverride = "`n:root,[data-theme]{--accent:$AccentColor !important;--accent-2:$AccentColor !important}"
     }
 
     $css = @"
-:root{
-$themePalette$accentOverride  --mono:'JetBrains Mono','Fira Code','SF Mono','Consolas','Cascadia Mono',monospace;
+:root,[data-theme="light"]{
+$palLight  --mono:'JetBrains Mono','Fira Code','SF Mono','Consolas','Cascadia Mono',monospace;
   --sans:-apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft YaHei','PingFang SC',Roboto,sans-serif;
 }
+[data-theme="dark"]{
+$palDark}
+[data-theme="minimal"]{
+$palMinimal}
+[data-theme="amber"]{
+$palAmber}$accentOverride
 "@ + @'
 *{box-sizing:border-box}
 html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased}
@@ -1035,6 +1039,12 @@ td.w{font-family:var(--sans);font-size:13px}
 /* footer */
 footer{text-align:center;color:var(--fg-dim);font-size:11px;font-family:var(--mono);margin-top:40px;padding-top:20px;border-top:1px solid var(--border)}
 
+/* theme switcher (v1.2): 右上角悬浮 4 色圆点 */
+.theme-switch{position:fixed;top:14px;right:16px;display:flex;gap:6px;background:var(--bg-card);border:1px solid var(--border);border-radius:24px;padding:6px;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.theme-switch button{width:22px;height:22px;border:2px solid transparent;border-radius:50%;cursor:pointer;padding:0;transition:transform .15s,border-color .15s;outline:none}
+.theme-switch button:hover{transform:scale(1.15)}
+.theme-switch button.active{border-color:var(--fg);transform:scale(1.1)}
+
 /* misc */
 .k{color:var(--fg-mute)}
 .muted{color:var(--fg-mute)}
@@ -1044,7 +1054,7 @@ footer{text-align:center;color:var(--fg-dim);font-size:11px;font-family:var(--mo
 
 /* print */
 @media print{
-  .sidebar{display:none}
+  .sidebar,.theme-switch{display:none}
   .main{margin-left:0;max-width:none;padding:20px}
   body{background:#fff;color:#000}
   .card,.banner,.info-grid,table,.find-col,.disclaimer{background:#fff;border-color:#ccc;color:#000}
@@ -1085,7 +1095,7 @@ footer{text-align:center;color:var(--fg-dim);font-size:11px;font-family:var(--mo
     # ---- HTML head ----
     [void]$sb.AppendLine(@"
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="$Theme">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -1093,6 +1103,13 @@ footer{text-align:center;color:var(--fg-dim);font-size:11px;font-family:var(--mo
 <style>$css</style>
 </head>
 <body>
+<!-- 主题切换器 (右上角悬浮, localStorage 持久化) -->
+<div class="theme-switch" id="themeSwitch" title="切换主题">
+  <button data-th="light"   style="background:#1565c0" title="Light"></button>
+  <button data-th="dark"    style="background:#58a6ff" title="Dark NOC"></button>
+  <button data-th="minimal" style="background:#27272a" title="Minimal"></button>
+  <button data-th="amber"   style="background:#b45309" title="Amber"></button>
+</div>
 "@)
 
     # ---- sidebar ----
@@ -1802,6 +1819,34 @@ $pcliHostBlock
     });
   }, { rootMargin: '-40% 0px -55% 0px' });
   sections.forEach(function(s){ io.observe(s); });
+})();
+
+// 主题切换 (v1.2): localStorage 持久化, 覆盖 <html data-theme>
+(function(){
+  var KEY = 'vci_theme';
+  var root = document.documentElement;
+  var saved = null;
+  try { saved = localStorage.getItem(KEY); } catch(e) {}
+  if (saved && /^(light|dark|minimal|amber)`$/.test(saved)) {
+    root.setAttribute('data-theme', saved);
+  }
+  var current = root.getAttribute('data-theme') || 'light';
+  var sw = document.getElementById('themeSwitch');
+  if (!sw) return;
+  function paint(){
+    sw.querySelectorAll('button').forEach(function(b){
+      b.classList.toggle('active', b.dataset.th === current);
+    });
+  }
+  paint();
+  sw.addEventListener('click', function(e){
+    var b = e.target.closest('button[data-th]');
+    if (!b) return;
+    current = b.dataset.th;
+    root.setAttribute('data-theme', current);
+    try { localStorage.setItem(KEY, current); } catch(e) {}
+    paint();
+  });
 })();
 </script>
 </body></html>

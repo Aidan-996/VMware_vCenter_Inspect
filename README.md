@@ -167,6 +167,8 @@ Invoke-WebRequest `
 | **`minimal`** | 灰白 + 近黑 accent | 极简风偏好 / 黑白打印 | `#fafafa` | `#27272a` |
 | **`amber`** | 米色 + 琥珀棕 | 暖色商务 / 客户交付 | `#fdfaf3` | `#b45309` |
 
+> 报告打开后**右上角 4 色圆点**可点击实时切换主题，不用重跑脚本。`localStorage` 持久化用户选择，再次打开同一份 HTML 自动恢复上次主题。`-Theme` 参数现在只决定**首次打开的默认主题**（无 localStorage 时生效）。
+
 ```powershell
 # 默认 light 主题，不用加参数
 .\vcenter_inspect.ps1 -VCenter ...
