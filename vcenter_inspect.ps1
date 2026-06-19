@@ -13,7 +13,7 @@
       - 当前 Triggered Alarms (REST 不暴露)
 
 .PARAMETER VCenter
-    vCenter IP 或 FQDN, 例: 192.168.100.20
+    vCenter IP 或 FQDN, 例: vcenter.lab.local
 
 .PARAMETER Username
     用户名, 例: administrator@vsphere.local
@@ -41,11 +41,11 @@
     强制跳过 PowerCLI 回退 (即使已安装), 只用纯 REST。
 
 .EXAMPLE
-    .\vcenter_inspect.ps1 -VCenter 192.168.100.20 -Username administrator@vsphere.local -Password 'Cctx@1234'
+    .\vcenter_inspect.ps1 -VCenter vcenter.lab.local -Username administrator@vsphere.local -Password '***'
 
 .EXAMPLE
     # 显式启用 PowerCLI 回退补全快照/Alarm
-    .\vcenter_inspect.ps1 -VCenter vc.lan -Username root@vsphere.local -Password '***' -UsePowerCLI
+    .\vcenter_inspect.ps1 -VCenter vcenter.lab.local -Username root@vsphere.local -Password '***' -UsePowerCLI
 
 .NOTES
     Author : Claude Opus 4.7
